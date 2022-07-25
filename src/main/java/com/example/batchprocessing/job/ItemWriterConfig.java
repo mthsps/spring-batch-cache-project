@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 @Configuration
 public class ItemWriterConfig {
+
     @Bean
     public JdbcBatchItemWriter<Person> writer(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<Person>()
@@ -19,4 +20,6 @@ public class ItemWriterConfig {
                 .dataSource(dataSource)
                 .build();
     }
+
+
 }

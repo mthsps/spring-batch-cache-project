@@ -1,6 +1,7 @@
 package com.example.batchprocessing.listener;
 
 import com.example.batchprocessing.model.Person;
+import com.example.batchprocessing.repository.PersonRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
@@ -17,15 +18,20 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	private final JdbcTemplate jdbcTemplate;
 
+	private PersonRepository personRepository;
+
 	@Autowired
-	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
+	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate, PersonRepository personRepository) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.personRepository = personRepository;
 	}
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
+
 			log.info("=====================JOB FINISHED=====================");
+			//personRepository.findAll().forEach(System.out::println);
 
 			jdbcTemplate.query("SELECT id, first_name, last_name FROM people",
 				(rs, row) -> new Person(
@@ -33,6 +39,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 					rs.getString(2),
 					rs.getString(3))
 			).forEach(person -> log.info(person.toString()));
+
 		}
 	}
 }
