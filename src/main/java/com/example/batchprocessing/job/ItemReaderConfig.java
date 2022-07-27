@@ -11,6 +11,7 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -23,6 +24,7 @@ import java.sql.SQLException;
 @Configuration
 public class ItemReaderConfig {
 
+    @Qualifier("origin-datasource")
     public DataSource dataSource;
 
     @Autowired
@@ -34,23 +36,10 @@ public class ItemReaderConfig {
     }
 
     @Bean
-    public FlatFileItemReader<Person> reader() {
-        return new FlatFileItemReaderBuilder<Person>()
-                .name("personItemReader")
-                .resource(new ClassPathResource("sample-data.csv"))
-                .delimited()
-                .names("firstName", "lastName")
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<Person>() {{
-                    setTargetType(Person.class);
-                }})
-                .build();
-    }
-
-    /*@Bean
     public JdbcCursorItemReader<Person> readerSQL(){
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
         itemReader.setDataSource(dataSource);
-        itemReader.setSql("SELECT * FROM people");
+        itemReader.setSql("SELECT * from PEOPLE LIMIT 50");
         itemReader.setRowMapper(new PersonRowMapper());
         return itemReader;
     }
@@ -68,6 +57,5 @@ public class ItemReaderConfig {
             return person;
         }
     }
-     */
 
 }

@@ -1,26 +1,50 @@
 spring:
+    jpa:
+      hibernate:
+        ddl-auto: update
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      defer-datasource-initialization: true
+    h2:
+      console:
+        enabled: true
+        path: /h2
+    sql:
+      init:
+        mode: always
+    batch:
+      jdbc:
+        initialize-schema: always
+    redis:
+      cluster:
+        nodes: 127.0.0.1:6379
+        max-redirects: 3
+
+origin:
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:file:~/h2/batch-redis;AUTO_SERVER=true;;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    jdbc-url: jdbc:h2:file:~/h2/origin/batch-redis;AUTO_SERVER=true;;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
     username: sa
     password:
     generate-unique-name: false
-  jpa:
-    hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    defer-datasource-initialization: true
-  h2:
-    console:
-      enabled: true
-      path: /h2
-  sql:
-    init:
-      mode: always
-  batch:
-    jdbc:
-      initialize-schema: always
-  redis:
-    cluster:
-     nodes: 127.0.0.1:6379
-     max-redirects: 3
+
+cache:
+  datasource:
+    driverClassName: org.h2.Driver
+    jdbc-url: jdbc:h2:file:~/h2/cache/batch-redis;AUTO_SERVER=true;;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    generate-unique-name: false
+
+destination:
+  datasource:
+    driverClassName: org.h2.Driver
+    jdbc-url: jdbc:h2:file:~/h2/destination/batch-redis;AUTO_SERVER=true;;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username:
+    password:
+    generate-unique-name: false
+
+
+
+
+
+

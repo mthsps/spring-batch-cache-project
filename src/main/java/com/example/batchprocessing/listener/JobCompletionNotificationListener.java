@@ -18,12 +18,9 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	private final JdbcTemplate jdbcTemplate;
 
-	private PersonRepository personRepository;
-
 	@Autowired
-	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate, PersonRepository personRepository) {
+	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.personRepository = personRepository;
 	}
 
 	@Override
@@ -31,14 +28,13 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
 
 			log.info("=====================JOB FINISHED=====================");
-			//personRepository.findAll().forEach(System.out::println);
 
-			jdbcTemplate.query("SELECT id, first_name, last_name FROM people",
-				(rs, row) -> new Person(
-					rs.getString(1),
-					rs.getString(2),
-					rs.getString(3))
-			).forEach(person -> log.info(person.toString()));
+//			jdbcTemplate.query("SELECT id, first_name, last_name FROM people",
+//				(rs, row) -> new Person(
+//					rs.getString(1),
+//					rs.getString(2),
+//					rs.getString(3))
+//			).forEach(person -> log.info(person.toString()));
 
 		}
 	}
