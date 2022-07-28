@@ -14,20 +14,34 @@ import javax.sql.DataSource;
 @Configuration
 public class ItemWriterConfig {
 
-    @Qualifier(value = "destination-datasource")
-    private DataSource dataSource;
+
+    private DataSource destinationDataSource;
+
+    private DataSource cacheDataSource;
 
     @Autowired
-    public ItemWriterConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public ItemWriterConfig(
+            @Qualifier(value = "destination-datasource") DataSource destinationDataSource,
+            @Qualifier(value = "cache-datasource") DataSource cacheDataSource) {
+        this.destinationDataSource = destinationDataSource;
+        this.cacheDataSource = cacheDataSource;
     }
 
-    @Bean
-    public JdbcBatchItemWriter<Person> writer() {
+    @Bean(name = "cache-writer")
+    public JdbcBatchItemWriter<Person> writerCache() {
         return new JdbcBatchItemWriterBuilder<Person>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)")
-                .dataSource(dataSource)
+                .dataSource(cacheDataSource)
+                .build();
+    }
+
+    @Bean(name = "destination-writer")
+    public JdbcBatchItemWriter<Person> writerDestination() {
+        return new JdbcBatchItemWriterBuilder<Person>()
+                .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
+                .sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)")
+                .dataSource(destinationDataSource)
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package com.example.batchprocessing.config;
+package com.example.batchprocessing.config.origin;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Primary;
 import javax.sql.DataSource;
 
 @Configuration
-public class DataSourceConfig {
+public class OriginDataSourceConfig {
 
     @Primary
     @Bean(name = "origin-datasource")
@@ -18,18 +18,4 @@ public class DataSourceConfig {
     public DataSource createOriginDataSource() {
         return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
-
-    @Bean(name = "cache-datasource")
-    @ConfigurationProperties(prefix = "cache.datasource")
-    public DataSource createCacheDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
-    }
-
-    @Bean(name = "destination-datasource")
-    @ConfigurationProperties(prefix = "destination.datasource")
-    public DataSource createDestinationDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
-    }
-
-
 }

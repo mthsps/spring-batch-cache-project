@@ -24,25 +24,43 @@ import java.sql.SQLException;
 @Configuration
 public class ItemReaderConfig {
 
-    @Qualifier("origin-datasource")
-    public DataSource dataSource;
+
+    public DataSource originDataSource;
+
+
+    public DataSource cacheDataSource;
 
     @Autowired
     PersonRepository repo;
 
+
     @Autowired
-    public ItemReaderConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public ItemReaderConfig(
+            @Qualifier("origin-datasource")DataSource originDataSource,
+            @Qualifier("cache-datasource") DataSource cacheDataSource) {
+        this.originDataSource = originDataSource;
+        this.cacheDataSource = cacheDataSource;
     }
 
-    @Bean
-    public JdbcCursorItemReader<Person> readerSQL(){
+    @Bean(name = "origin-reader")
+    public JdbcCursorItemReader<Person> readerOrigin(){
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
-        itemReader.setDataSource(dataSource);
+        itemReader.setDataSource(originDataSource);
         itemReader.setSql("SELECT * from PEOPLE LIMIT 50");
         itemReader.setRowMapper(new PersonRowMapper());
         return itemReader;
     }
+
+    @Bean(name = "cache-reader")
+    public JdbcCursorItemReader<Person> readerCache(){
+        JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
+        itemReader.setDataSource(cacheDataSource);
+        itemReader.setSql("SELECT * from PEOPLE LIMIT 10");
+        itemReader.setRowMapper(new PersonRowMapper());
+        return itemReader;
+    }
+
+
 
     public static class PersonRowMapper implements RowMapper<Person> {
         public static final String ID_COLUMN = "id";

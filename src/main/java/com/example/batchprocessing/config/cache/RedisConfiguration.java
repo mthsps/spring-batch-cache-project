@@ -1,4 +1,4 @@
-package com.example.batchprocessing.config;
+package com.example.batchprocessing.config.cache;
 
 
 import org.springframework.context.annotation.Bean;

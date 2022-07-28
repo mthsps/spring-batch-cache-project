@@ -18,12 +18,12 @@ public class JobConfig {
 
 
     @Bean
-    public Job importUserJob(JobCompletionNotificationListener listener, Step step1) {
+    public Job importUserJob(JobCompletionNotificationListener listener, Step step1, Step step2) {
         return jobBuilderFactory.get("importUserJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .flow(step1)
-                .end()
+                .start(step1)
+                .next(step2)
                 .build();
     }
 }

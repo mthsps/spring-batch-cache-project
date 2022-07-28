@@ -10,6 +10,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.support.CompositeItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,8 +27,19 @@ public class StepConfig {
     }
 
     @Bean
-    public Step step1(ItemReader<Person> reader, ItemWriter<Person> writer) {
+    public Step step1(@Qualifier("origin-reader") ItemReader<Person> reader,
+                      @Qualifier("cache-writer") ItemWriter<Person> writer) {
         return stepBuilderFactory.get("step1")
+                .<Person, Person> chunk(10)
+                .reader(reader)
+                .writer(writer)
+                .build();
+    }
+
+    @Bean
+    public Step step2(@Qualifier("cache-reader") ItemReader<Person> reader,
+                      @Qualifier("destination-writer")ItemWriter<Person> writer) {
+        return stepBuilderFactory.get("step2")
                 .<Person, Person> chunk(10)
                 .reader(reader)
                 .processor(compositeProcessor())
