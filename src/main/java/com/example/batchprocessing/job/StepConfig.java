@@ -27,9 +27,9 @@ public class StepConfig {
     }
 
     @Bean
-    public Step step1(@Qualifier("origin-reader") ItemReader<Person> reader,
+    public Step fromOriginToCache(@Qualifier("origin-reader") ItemReader<Person> reader,
                       @Qualifier("cache-writer") ItemWriter<Person> writer) {
-        return stepBuilderFactory.get("step1")
+        return stepBuilderFactory.get("fromOriginToCache")
                 .<Person, Person> chunk(10)
                 .reader(reader)
                 .writer(writer)
@@ -37,13 +37,20 @@ public class StepConfig {
     }
 
     @Bean
-    public Step step2(@Qualifier("cache-reader") ItemReader<Person> reader,
+    public Step fromCacheToDestinantion(@Qualifier("cache-reader") ItemReader<Person> reader,
                       @Qualifier("destination-writer")ItemWriter<Person> writer) {
         return stepBuilderFactory.get("step2")
                 .<Person, Person> chunk(10)
                 .reader(reader)
                 .processor(compositeProcessor())
                 .writer(writer)
+                .build();
+    }
+
+    @Bean
+    public Step clearCache() {
+        return stepBuilderFactory.get("clearCache")
+                .tasklet(cleanCacheTasklet1())
                 .build();
     }
 
@@ -68,6 +75,11 @@ public class StepConfig {
     @Bean
     public PersonItemProcessor personProcessor() {
         return new PersonItemProcessor();
+    }
+
+    @Bean
+    public CleanCacheTasklet cleanCacheTasklet1() {
+        return new CleanCacheTasklet();
     }
 
 }

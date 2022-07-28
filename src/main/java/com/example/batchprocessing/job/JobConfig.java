@@ -16,14 +16,17 @@ public class JobConfig {
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
 
-
     @Bean
-    public Job importUserJob(JobCompletionNotificationListener listener, Step step1, Step step2) {
+    public Job importUserJob(JobCompletionNotificationListener listener,
+                             Step fromOriginToCache,
+                             Step fromCacheToDestinantion,
+                             Step clearCache) {
         return jobBuilderFactory.get("importUserJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(step1)
-                .next(step2)
+                .start(fromOriginToCache)
+                .next(fromCacheToDestinantion)
+                .next(clearCache)
                 .build();
     }
 }
