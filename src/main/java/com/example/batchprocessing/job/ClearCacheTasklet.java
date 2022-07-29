@@ -12,14 +12,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-public class CleanCacheTasklet implements Tasklet {
+public class ClearCacheTasklet implements Tasklet {
 
     public static final String SQL_DELETE_PERSON = "DELETE FROM PEOPLE";
     @Autowired
     @Qualifier("cache-datasource")
     private DataSource cacheDataSource;
 
-    public CleanCacheTasklet() {}
+    public ClearCacheTasklet() {}
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {

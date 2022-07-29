@@ -27,23 +27,33 @@ public class StepConfig {
     }
 
     @Bean
-    public Step fromOriginToCache(@Qualifier("origin-reader") ItemReader<Person> reader,
-                      @Qualifier("cache-writer") ItemWriter<Person> writer) {
+    public Step fromOriginToCache(@Qualifier("origin-reader") ItemReader<Person> readerOrigin,
+                      @Qualifier("cache-writer") ItemWriter<Person> writerCache) {
         return stepBuilderFactory.get("fromOriginToCache")
                 .<Person, Person> chunk(10)
-                .reader(reader)
-                .writer(writer)
+                .reader(readerOrigin)
+                .writer(writerCache)
                 .build();
     }
 
     @Bean
-    public Step fromCacheToDestinantion(@Qualifier("cache-reader") ItemReader<Person> reader,
-                      @Qualifier("destination-writer")ItemWriter<Person> writer) {
+    public Step fromCacheToDestinantionEvenId(@Qualifier("cache-reader-even-id") ItemReader<Person> readerEvenId,
+                      @Qualifier("destination-writer")ItemWriter<Person> writerDestination) {
         return stepBuilderFactory.get("step2")
                 .<Person, Person> chunk(10)
-                .reader(reader)
+                .reader(readerEvenId)
                 .processor(compositeProcessor())
-                .writer(writer)
+                .writer(writerDestination)
+                .build();
+    }
+
+    @Bean
+    public Step fromCacheToDestinantionBatches(@Qualifier("cache-reader-batches") ItemReader<Person> readerBatches,
+                                        @Qualifier("destination-writer")ItemWriter<Person> writerDestination) {
+        return stepBuilderFactory.get("step2")
+                .<Person, Person> chunk(10)
+                .reader(readerBatches)
+                .writer(writerDestination)
                 .build();
     }
 
@@ -78,8 +88,8 @@ public class StepConfig {
     }
 
     @Bean
-    public CleanCacheTasklet cleanCacheTasklet1() {
-        return new CleanCacheTasklet();
+    public ClearCacheTasklet cleanCacheTasklet1() {
+        return new ClearCacheTasklet();
     }
 
 }

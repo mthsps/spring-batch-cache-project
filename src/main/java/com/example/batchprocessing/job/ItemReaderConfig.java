@@ -24,10 +24,12 @@ import java.sql.SQLException;
 @Configuration
 public class ItemReaderConfig {
 
+    private static final String SQL_SELECT_FROM_CACHE = "SELECT * FROM PEOPLE LIMIT 25";
+    private static final String SQL_SELECT_FROM_ORIGIN = "SELECT * FROM PEOPLE LIMIT 100";
+    private static final String SQL_SELECT_EVEN_ID = "SELECT * FROM PEOPLE WHERE id % 2 = 0";
+
 
     public DataSource originDataSource;
-
-
     public DataSource cacheDataSource;
 
     @Autowired
@@ -46,20 +48,28 @@ public class ItemReaderConfig {
     public JdbcCursorItemReader<Person> readerOrigin(){
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
         itemReader.setDataSource(originDataSource);
-        itemReader.setSql("SELECT * from PEOPLE LIMIT 50");
+        itemReader.setSql(SQL_SELECT_FROM_ORIGIN);
         itemReader.setRowMapper(new PersonRowMapper());
         return itemReader;
     }
 
-    @Bean(name = "cache-reader")
-    public JdbcCursorItemReader<Person> readerCache(){
+    @Bean(name = "cache-reader-even-id")
+    public JdbcCursorItemReader<Person> readerCacheEvenId(){
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
         itemReader.setDataSource(cacheDataSource);
-        itemReader.setSql("SELECT * from PEOPLE LIMIT 10");
+        itemReader.setSql(SQL_SELECT_EVEN_ID);
         itemReader.setRowMapper(new PersonRowMapper());
         return itemReader;
     }
 
+    @Bean(name = "cache-reader-batches")
+    public JdbcCursorItemReader<Person> readerCacheInBatches(){
+        JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
+        itemReader.setDataSource(cacheDataSource);
+        itemReader.setSql(SQL_SELECT_FROM_CACHE);
+        itemReader.setRowMapper(new PersonRowMapper());
+        return itemReader;
+    }
 
 
     public static class PersonRowMapper implements RowMapper<Person> {

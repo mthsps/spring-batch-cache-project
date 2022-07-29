@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 @Configuration
 public class ItemWriterConfig {
 
+    public static final String SQL_INTO_PEOPLE = "INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)";
 
     private DataSource destinationDataSource;
 
@@ -31,7 +32,7 @@ public class ItemWriterConfig {
     public JdbcBatchItemWriter<Person> writerCache() {
         return new JdbcBatchItemWriterBuilder<Person>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                .sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)")
+                .sql(SQL_INTO_PEOPLE)
                 .dataSource(cacheDataSource)
                 .build();
     }
@@ -40,7 +41,7 @@ public class ItemWriterConfig {
     public JdbcBatchItemWriter<Person> writerDestination() {
         return new JdbcBatchItemWriterBuilder<Person>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                .sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)")
+                .sql(SQL_INTO_PEOPLE)
                 .dataSource(destinationDataSource)
                 .build();
     }
