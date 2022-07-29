@@ -14,21 +14,21 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-public class ClearCacheTasklet implements Tasklet {
+public class ClearEvenIdTasklet implements Tasklet {
 
-    private static final Logger log = LoggerFactory.getLogger(ClearCacheTasklet.class);
+    private static final Logger log = LoggerFactory.getLogger(ClearEvenIdTasklet.class);
 
-    public static final String SQL_DELETE_PERSON = "DELETE FROM PEOPLE";
+    public static final String SQL_DELETE_EVEN_ID = "DELETE FROM PEOPLE WHERE id % 2 = 0";
     @Autowired
     @Qualifier("cache-datasource")
     private DataSource cacheDataSource;
 
-    public ClearCacheTasklet() {}
+    public ClearEvenIdTasklet() {}
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        new JdbcTemplate(cacheDataSource).execute(SQL_DELETE_PERSON);
-        log.info("=====================CLEARED ALL CACHE=====================");
+        new JdbcTemplate(cacheDataSource).execute(SQL_DELETE_EVEN_ID);
+        log.info("=====================CLEARED EVEN ID=====================");
         return RepeatStatus.FINISHED;
     }
 }

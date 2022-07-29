@@ -19,16 +19,20 @@ public class JobConfig {
 
     @Bean
     @Order(1)
-    public Job importPesonWithEvenId(JobCompletionNotificationListener listener,
-                             Step fromOriginToCache,
-                             Step fromCacheToDestinantionEvenId,
-                             Step clearCache) {
+    public Job importPesonWithEvenId(
+            JobCompletionNotificationListener listener,
+            Step fromOriginToCache,
+            Step fromCacheToDestinantionEvenId,
+            Step clearCache,
+            Step clearCacheEvenId
+    ) {
         return jobBuilderFactory.get("importPesonWithEvenId")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(clearCache)
-                .start(fromOriginToCache)
+                .next(fromOriginToCache)
                 .next(fromCacheToDestinantionEvenId)
+                .next(clearCacheEvenId)
                 .build();
     }
 
@@ -36,7 +40,9 @@ public class JobConfig {
     @Bean
     @Order(2)
     public Job importAllPeopleFromCacheInBatches(
-            JobCompletionNotificationListener listener, Step fromCacheToDestinantionBatches) {
+            JobCompletionNotificationListener listener,
+            Step fromCacheToDestinantionBatches
+    ) {
         return jobBuilderFactory.get("importAllPeopleFromCacheInBatches")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)

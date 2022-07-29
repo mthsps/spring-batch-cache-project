@@ -27,8 +27,10 @@ public class StepConfig {
     }
 
     @Bean
-    public Step fromOriginToCache(@Qualifier("origin-reader") ItemReader<Person> readerOrigin,
-                      @Qualifier("cache-writer") ItemWriter<Person> writerCache) {
+    public Step fromOriginToCache(
+            @Qualifier("origin-reader") ItemReader<Person> readerOrigin,
+            @Qualifier("cache-writer") ItemWriter<Person> writerCache
+    ) {
         return stepBuilderFactory.get("fromOriginToCache")
                 .<Person, Person> chunk(10)
                 .reader(readerOrigin)
@@ -37,9 +39,11 @@ public class StepConfig {
     }
 
     @Bean
-    public Step fromCacheToDestinantionEvenId(@Qualifier("cache-reader-even-id") ItemReader<Person> readerEvenId,
-                      @Qualifier("destination-writer")ItemWriter<Person> writerDestination) {
-        return stepBuilderFactory.get("step2")
+    public Step fromCacheToDestinantionEvenId(
+            @Qualifier("cache-reader-even-id") ItemReader<Person> readerEvenId,
+            @Qualifier("destination-writer")ItemWriter<Person> writerDestination
+    ) {
+        return stepBuilderFactory.get("fromCacheToDestinantionEvenId")
                 .<Person, Person> chunk(10)
                 .reader(readerEvenId)
                 .processor(compositeProcessor())
@@ -48,9 +52,11 @@ public class StepConfig {
     }
 
     @Bean
-    public Step fromCacheToDestinantionBatches(@Qualifier("cache-reader-batches") ItemReader<Person> readerBatches,
-                                        @Qualifier("destination-writer")ItemWriter<Person> writerDestination) {
-        return stepBuilderFactory.get("step2")
+    public Step fromCacheToDestinantionBatches(
+            @Qualifier("cache-reader-batches") ItemReader<Person> readerBatches,
+            @Qualifier("destination-writer")ItemWriter<Person> writerDestination
+    ) {
+        return stepBuilderFactory.get("fromCacheToDestinantionBatches")
                 .<Person, Person> chunk(10)
                 .reader(readerBatches)
                 .writer(writerDestination)
@@ -60,7 +66,14 @@ public class StepConfig {
     @Bean
     public Step clearCache() {
         return stepBuilderFactory.get("clearCache")
-                .tasklet(cleanCacheTasklet1())
+                .tasklet(clearAllCache())
+                .build();
+    }
+
+    @Bean
+    public Step clearCacheEvenId() {
+        return stepBuilderFactory.get("clearCacheEvenId")
+                .tasklet(clearEvenId())
                 .build();
     }
 
@@ -88,8 +101,14 @@ public class StepConfig {
     }
 
     @Bean
-    public ClearCacheTasklet cleanCacheTasklet1() {
+    public ClearCacheTasklet clearAllCache() {
         return new ClearCacheTasklet();
     }
+
+    @Bean
+    public ClearEvenIdTasklet clearEvenId() {
+        return new ClearEvenIdTasklet();
+    }
+
 
 }
