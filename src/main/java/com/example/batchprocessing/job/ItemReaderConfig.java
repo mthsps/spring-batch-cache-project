@@ -15,7 +15,7 @@ import java.sql.SQLException;
 @Configuration
 public class ItemReaderConfig {
 
-    private static final String SQL_SELECT_FROM_CACHE = "SELECT * FROM PEOPLE LIMIT 25";
+    private static final String SQL_SELECT_FROM_CACHE = "SELECT * FROM PEOPLE LIMIT 10";
     private static final String SQL_SELECT_FROM_ORIGIN = "SELECT * FROM PEOPLE LIMIT 100";
     private static final String SQL_SELECT_EVEN_ID = "SELECT * FROM PEOPLE WHERE id % 2 = 0";
 
