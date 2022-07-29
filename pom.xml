@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>redis-batch-processing</artifactId>
+	<artifactId>cache-batch-processing</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-batch-cache</name>
 	<description>Spring Batch demo project</description>
@@ -39,15 +39,6 @@
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.redis</groupId>
-			<artifactId>spring-batch-redis</artifactId>
-			<version>2.31.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

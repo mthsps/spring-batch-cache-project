@@ -1,20 +1,11 @@
 package com.example.batchprocessing.job;
 
 import com.example.batchprocessing.model.Person;
-import com.example.batchprocessing.repository.PersonRepository;
-import com.redis.spring.batch.DataStructure;
-import com.redis.spring.batch.KeyValue;
-import com.redis.spring.batch.RedisItemReader;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
@@ -28,13 +19,8 @@ public class ItemReaderConfig {
     private static final String SQL_SELECT_FROM_ORIGIN = "SELECT * FROM PEOPLE LIMIT 100";
     private static final String SQL_SELECT_EVEN_ID = "SELECT * FROM PEOPLE WHERE id % 2 = 0";
 
-
     public DataSource originDataSource;
     public DataSource cacheDataSource;
-
-    @Autowired
-    PersonRepository repo;
-
 
     @Autowired
     public ItemReaderConfig(
