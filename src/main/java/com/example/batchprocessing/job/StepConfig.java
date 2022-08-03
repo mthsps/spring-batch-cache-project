@@ -2,6 +2,9 @@ package com.example.batchprocessing.job;
 
 import com.example.batchprocessing.model.Person;
 import com.example.batchprocessing.processor.PersonItemProcessor;
+import com.example.batchprocessing.tasklet.ClearCacheTasklet;
+import com.example.batchprocessing.tasklet.ClearEvenIdTasklet;
+import com.example.batchprocessing.tasklet.CountRowsTasklet;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemReader;
@@ -73,6 +76,13 @@ public class StepConfig {
     }
 
     @Bean
+    public Step countRowsCache() {
+        return stepBuilderFactory.get("countRowsCache")
+                .tasklet(countRows())
+                .build();
+    }
+
+    @Bean
     public PersonItemProcessor personProcessor() {
         return new PersonItemProcessor();
     }
@@ -85,6 +95,11 @@ public class StepConfig {
     @Bean
     public ClearEvenIdTasklet clearEvenId() {
         return new ClearEvenIdTasklet();
+    }
+
+    @Bean
+    public CountRowsTasklet countRows() {
+        return new CountRowsTasklet();
     }
 
 

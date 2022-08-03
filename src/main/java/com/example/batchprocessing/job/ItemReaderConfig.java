@@ -49,7 +49,7 @@ public class ItemReaderConfig {
     }
 
     @Bean(name = "cache-reader-batches")
-    public JdbcCursorItemReader<Person> readerCacheInBatches(){
+    public JdbcCursorItemReader<Person> readerCacheInBatches() {
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
         itemReader.setDataSource(cacheDataSource);
         itemReader.setSql(SQL_SELECT_FROM_CACHE);

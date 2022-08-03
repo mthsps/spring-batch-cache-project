@@ -41,12 +41,14 @@ public class JobConfig {
     @Order(2)
     public Job importAllPeopleFromCacheInBatches(
             JobCompletionNotificationListener listener,
-            Step fromCacheToDestinantionBatches
+            Step fromCacheToDestinantionBatches,
+            Step countRowsCache
     ) {
         return jobBuilderFactory.get("importAllPeopleFromCacheInBatches")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(fromCacheToDestinantionBatches)
+                .start(countRowsCache)
+                .next(fromCacheToDestinantionBatches)
                 .build();
     }
 
