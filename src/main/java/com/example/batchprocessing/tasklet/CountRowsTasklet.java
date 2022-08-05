@@ -3,8 +3,10 @@ package com.example.batchprocessing.tasklet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,9 +25,11 @@ public class CountRowsTasklet implements Tasklet {
     @Qualifier("cache-datasource")
     private DataSource cacheDataSource;
 
+
     public CountRowsTasklet() {}
 
     @Override
+    @StepScope
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(cacheDataSource);
 
@@ -33,6 +37,10 @@ public class CountRowsTasklet implements Tasklet {
 
         log.info("=====================COUNTED {} ROWS=====================", count);
 
+        ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
+        executionContext.put("count", count);
+
         return RepeatStatus.FINISHED;
     }
+
 }

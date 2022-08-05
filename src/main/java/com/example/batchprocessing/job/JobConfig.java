@@ -19,19 +19,19 @@ public class JobConfig {
 
     @Bean
     @Order(1)
-    public Job importPesonWithEvenId(
+    public Job importPersonWithEvenId(
             JobCompletionNotificationListener listener,
             Step fromOriginToCache,
-            Step fromCacheToDestinantionEvenId,
+            Step fromCacheToDestinationEvenId,
             Step clearCache,
             Step clearCacheEvenId
     ) {
-        return jobBuilderFactory.get("importPesonWithEvenId")
+        return jobBuilderFactory.get("importPersonWithEvenId")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(clearCache)
                 .next(fromOriginToCache)
-                .next(fromCacheToDestinantionEvenId)
+                .next(fromCacheToDestinationEvenId)
                 .next(clearCacheEvenId)
                 .build();
     }
@@ -41,14 +41,14 @@ public class JobConfig {
     @Order(2)
     public Job importAllPeopleFromCacheInBatches(
             JobCompletionNotificationListener listener,
-            Step fromCacheToDestinantionBatches,
+            Step fromCacheToDestinationBatches,
             Step countRowsCache
     ) {
         return jobBuilderFactory.get("importAllPeopleFromCacheInBatches")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(countRowsCache)
-                .next(fromCacheToDestinantionBatches)
+                .next(fromCacheToDestinationBatches)
                 .build();
     }
 

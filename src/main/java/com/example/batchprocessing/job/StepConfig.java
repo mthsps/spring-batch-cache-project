@@ -1,5 +1,6 @@
 package com.example.batchprocessing.job;
 
+import com.example.batchprocessing.listener.GenericStepListener;
 import com.example.batchprocessing.model.Person;
 import com.example.batchprocessing.processor.PersonItemProcessor;
 import com.example.batchprocessing.tasklet.ClearCacheTasklet;
@@ -33,31 +34,34 @@ public class StepConfig {
                 .<Person, Person> chunk(10)
                 .reader(readerOrigin)
                 .writer(writerCache)
+                .listener(createGenericStepListener())
                 .build();
     }
 
     @Bean
-    public Step fromCacheToDestinantionEvenId(
+    public Step fromCacheToDestinationEvenId(
             @Qualifier("cache-reader-even-id") ItemReader<Person> readerEvenId,
-            @Qualifier("destination-writer")ItemWriter<Person> writerDestination
+            @Qualifier("destination-writer") ItemWriter<Person> writerDestination
     ) {
-        return stepBuilderFactory.get("fromCacheToDestinantionEvenId")
+        return stepBuilderFactory.get("fromCacheToDestinationEvenId")
                 .<Person, Person> chunk(10)
                 .reader(readerEvenId)
                 .processor(personProcessor())
                 .writer(writerDestination)
+                .listener(createGenericStepListener())
                 .build();
     }
 
     @Bean
-    public Step fromCacheToDestinantionBatches(
-            @Qualifier("cache-reader-batches") ItemReader<Person> readerBatches,
+    public Step fromCacheToDestinationBatches(
+            @Qualifier("cache-reader-batches")ItemReader<Person> readerBatches,
             @Qualifier("destination-writer")ItemWriter<Person> writerDestination
     ) {
-        return stepBuilderFactory.get("fromCacheToDestinantionBatches")
+        return stepBuilderFactory.get("fromCacheToDestinationBatches")
                 .<Person, Person> chunk(10)
                 .reader(readerBatches)
                 .writer(writerDestination)
+                .listener(createGenericStepListener())
                 .build();
     }
 
@@ -85,6 +89,11 @@ public class StepConfig {
     @Bean
     public PersonItemProcessor personProcessor() {
         return new PersonItemProcessor();
+    }
+
+    @Bean
+    public GenericStepListener createGenericStepListener() {
+        return new GenericStepListener();
     }
 
     @Bean

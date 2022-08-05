@@ -23,17 +23,17 @@ public class JobScheduler {
     private JobLauncher jobLauncher;
 
     @Autowired
-    @Qualifier("importPesonWithEvenId")
-    private Job jobImportPesonWithEvenId;
+    @Qualifier("importPersonWithEvenId")
+    private Job jobImportPersonWithEvenId;
 
     @Autowired
     @Qualifier("importAllPeopleFromCacheInBatches")
     private Job jobImportAllPeopleFromCacheInBatches;
 
     //At every minute
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "*/24 * * * * *")
     public void firstJobScheduler(){
-        runJob(jobImportPesonWithEvenId);
+        runJob(jobImportPersonWithEvenId);
     }
 
     //At every 12 seconds
