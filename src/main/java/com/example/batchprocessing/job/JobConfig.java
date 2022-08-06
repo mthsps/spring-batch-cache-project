@@ -14,8 +14,13 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @EnableBatchProcessing
 public class JobConfig {
-    @Autowired
+
     private JobBuilderFactory jobBuilderFactory;
+
+    @Autowired
+    public JobConfig(JobBuilderFactory jobBuilderFactory) {
+        this.jobBuilderFactory = jobBuilderFactory;
+    }
 
     @Bean
     @Order(1)
@@ -42,15 +47,16 @@ public class JobConfig {
     public Job importAllPeopleFromCacheInBatches(
             JobCompletionNotificationListener listener,
             Step fromCacheToDestinationBatches,
-            Step countRowsCache
+            Step countRowsCache,
+            Step clearBatchCache
     ) {
         return jobBuilderFactory.get("importAllPeopleFromCacheInBatches")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(countRowsCache)
                 .next(fromCacheToDestinationBatches)
+                .next(clearBatchCache)
                 .build();
     }
-
 
 }

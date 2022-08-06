@@ -3,6 +3,7 @@ package com.example.batchprocessing.job;
 import com.example.batchprocessing.listener.GenericStepListener;
 import com.example.batchprocessing.model.Person;
 import com.example.batchprocessing.processor.PersonItemProcessor;
+import com.example.batchprocessing.tasklet.ClearBatchCacheTasklet;
 import com.example.batchprocessing.tasklet.ClearCacheTasklet;
 import com.example.batchprocessing.tasklet.ClearEvenIdTasklet;
 import com.example.batchprocessing.tasklet.CountRowsTasklet;
@@ -87,6 +88,13 @@ public class StepConfig {
     }
 
     @Bean
+    public Step clearBatchCache() {
+        return stepBuilderFactory.get("clearBatchCache")
+                .tasklet(clearBatch())
+                .build();
+    }
+
+    @Bean
     public PersonItemProcessor personProcessor() {
         return new PersonItemProcessor();
     }
@@ -111,5 +119,9 @@ public class StepConfig {
         return new CountRowsTasklet();
     }
 
+    @Bean
+    public ClearBatchCacheTasklet clearBatch() {
+        return new ClearBatchCacheTasklet();
+    }
 
 }

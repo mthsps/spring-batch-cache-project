@@ -1,12 +1,13 @@
 package com.example.batchprocessing.job;
 
 import com.example.batchprocessing.model.Person;
+import com.example.batchprocessing.util.ReadCountGetter;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
@@ -16,18 +17,9 @@ import java.sql.SQLException;
 @Configuration
 public class ItemReaderConfig {
 
+    private static final int NUMBER_OF_EXECUTIONS = 5;
     private static final String SQL_SELECT_FROM_CACHE = "SELECT * FROM PEOPLE LIMIT {}";
-    private static final String SQL_COUNT_ROWS = "Select ABS((select READ_COUNT\n" +
-            "            from BATCH_STEP_EXECUTION\n" +
-            "            where STEP_NAME = 'fromOriginToCache'\n" +
-            "            order by STEP_EXECUTION_ID desc\n" +
-            "            limit 1)\n" +
-            "    -\n" +
-            "           (select READ_COUNT\n" +
-            "            from BATCH_STEP_EXECUTION\n" +
-            "            where STEP_NAME = 'clearCacheEvenId'\n" +
-            "            order by STEP_EXECUTION_ID desc\n" +
-            "            limit 1)) as READ_COUNT_ATUALIZADOS";
+
     private static final String SQL_SELECT_FROM_ORIGIN = "SELECT * FROM PEOPLE LIMIT {}";
     private static final String SQL_SELECT_EVEN_ID = "SELECT * FROM PEOPLE WHERE id % 2 = 0";
 
@@ -43,10 +35,14 @@ public class ItemReaderConfig {
     }
 
     @Bean(name = "origin-reader")
+    @StepScope
     public JdbcCursorItemReader<Person> readerOrigin(){
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
+
+        // Randomize the number of people sent from originDataSource to the cacheDataSource
         int randomLimit = (int) (Math.random() * (200 - 50)) + 50;
         String sql = SQL_SELECT_FROM_ORIGIN.replace("{}", randomLimit + "");
+
         itemReader.setDataSource(originDataSource);
         itemReader.setSql(sql);
         itemReader.setRowMapper(new PersonRowMapper());
@@ -54,6 +50,7 @@ public class ItemReaderConfig {
     }
 
     @Bean(name = "cache-reader-even-id")
+    @StepScope
     public JdbcCursorItemReader<Person> readerCacheEvenId(){
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
         itemReader.setDataSource(cacheDataSource);
@@ -63,22 +60,22 @@ public class ItemReaderConfig {
     }
 
     @Bean(name = "cache-reader-batches")
+    @StepScope
     public JdbcCursorItemReader<Person> readerCacheInBatches() {
+        // Divide the number of people remaining in the cache
+        // by the number of times the step needs to be executed
+        // to clear the cache before new people are sent.
+        int rowsCount = ReadCountGetter.getStepReadCount() / NUMBER_OF_EXECUTIONS;
+        String sql = SQL_SELECT_FROM_CACHE.replace("{}", rowsCount + "");
+
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
-        Integer rowsCount = countRows(originDataSource);
-        System.out.println("Rows count: " + rowsCount);
-        String sql = SQL_SELECT_FROM_CACHE.replace("{}", rowsCount.toString());
         itemReader.setDataSource(cacheDataSource);
         itemReader.setSql(sql);
         itemReader.setRowMapper(new ItemReaderConfig.PersonRowMapper());
+
         return itemReader;
-
     }
 
-    public Integer countRows(DataSource dataSource) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        return jdbcTemplate.queryForObject(SQL_COUNT_ROWS, Integer.class);
-    }
 
     public static class PersonRowMapper implements RowMapper<Person> {
         public static final String ID_COLUMN = "id";

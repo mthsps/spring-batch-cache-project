@@ -30,23 +30,24 @@ public class JobScheduler {
     @Qualifier("importAllPeopleFromCacheInBatches")
     private Job jobImportAllPeopleFromCacheInBatches;
 
-    //At every minute
-    @Scheduled(cron = "*/24 * * * * *")
+    //At every 5 minutes
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void firstJobScheduler(){
         runJob(jobImportPersonWithEvenId);
     }
 
-    //At every 12 seconds
-    @Scheduled(cron = "*/12 * * * * *")
+    //At every minute
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void secondJobScheduler(){
         runJob(jobImportAllPeopleFromCacheInBatches);
     }
+
 
     private void runJob(Job job) {
         JobParameters jobParameters = new JobParametersBuilder().addLong("time", System.currentTimeMillis()).toJobParameters();
         try {
             JobExecution jobExecution = jobLauncher.run(job, jobParameters);
-            log.info("====================={} STARTED at {}=====================", job.getName(), jobExecution.getStartTime());
+            log.info("====================={} JOB FINISHED at {}=====================", job.getName(), jobExecution.getEndTime());
         } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
                  | JobParametersInvalidException e) {
             e.printStackTrace();

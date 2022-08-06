@@ -13,14 +13,11 @@ public class GenericStepListener implements StepExecutionListener {
     private static final Logger log = LoggerFactory.getLogger(GenericStepListener.class);
 
     @Override
-    public void beforeStep(StepExecution stepExecution) {
-        log.info("=====================BEFORE {} with COUNT {} =====================", stepExecution.getStepName(), stepExecution.getReadCount());
-    }
+    public void beforeStep(StepExecution stepExecution) {}
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        log.info("=====================AFTER {} with COUNT {} =====================", stepExecution.getStepName(), stepExecution.getReadCount());
-
+        log.info("====================={} FINISHED with SUMMARY: {}", stepExecution.getStepName(),  stepExecution.getSummary());
         return ExitStatus.COMPLETED;
     }
 

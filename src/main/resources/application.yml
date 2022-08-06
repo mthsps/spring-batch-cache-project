@@ -1,19 +1,21 @@
 spring:
-    jpa:
+  jpa:
       hibernate:
         ddl-auto: update
       database-platform: org.hibernate.dialect.PostgreSQLDialect
       defer-datasource-initialization: true
-    h2:
-      console:
-        enabled: true
-        path: /h2
+  h2:
+    console:
+      enabled: true
+      path: /h2
     sql:
       init:
         mode: always
-    batch:
-      jdbc:
-        initialize-schema: always
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+        enabled: false
 
 origin:
   datasource:
