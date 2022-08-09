@@ -1,7 +1,6 @@
 package com.example.batchprocessing.job;
 
 import com.example.batchprocessing.model.Person;
-import com.example.batchprocessing.util.ReadCountGetter;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,13 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.example.batchprocessing.util.JobUtils.*;
+
 @Configuration
 public class ItemReaderConfig {
 
     private static final int NUMBER_OF_EXECUTIONS = 5;
     private static final String SQL_SELECT_FROM_CACHE = "SELECT * FROM PEOPLE LIMIT {}";
-
     private static final String SQL_SELECT_FROM_ORIGIN = "SELECT * FROM PEOPLE LIMIT {}";
     private static final String SQL_SELECT_EVEN_ID = "SELECT * FROM PEOPLE WHERE id % 2 = 0";
 
@@ -62,12 +62,7 @@ public class ItemReaderConfig {
     @Bean(name = "cache-reader-batches")
     @StepScope
     public JdbcCursorItemReader<Person> readerCacheInBatches() {
-        // Divide the number of people remaining in the cache
-        // by the number of times the step needs to be executed
-        // to clear the cache before new people are sent.
-        int rowsCount = ReadCountGetter.getStepReadCount() / NUMBER_OF_EXECUTIONS;
-        String sql = SQL_SELECT_FROM_CACHE.replace("{}", rowsCount + "");
-
+        String sql = SQL_SELECT_FROM_CACHE.replace("{}", getBatchSize() +"");
         JdbcCursorItemReader<Person> itemReader = new JdbcCursorItemReader<>();
         itemReader.setDataSource(cacheDataSource);
         itemReader.setSql(sql);

@@ -8,14 +8,9 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 
 @Component
-public class ReadCountGetter {
+public final class JobUtils {
 
-    private static DataSource originDataSource;
-
-    @Autowired
-    public ReadCountGetter(@Qualifier("origin-datasource")DataSource originDataSource){
-        ReadCountGetter.originDataSource = originDataSource;
-    }
+    private static final int NUMBER_OF_EXECUTIONS = 5;
 
     private static final String SQL_STEP_READ_COUNT = "select ABS((select READ_COUNT\n" +
             "            from BATCH_STEP_EXECUTION\n" +
@@ -29,10 +24,22 @@ public class ReadCountGetter {
             "            order by STEP_EXECUTION_ID desc\n" +
             "            limit 1)) as READ_COUNT_ATUALIZADOS";
 
-    public static Integer getStepReadCount() {
+    private static DataSource originDataSource;
+
+    @Autowired
+    public JobUtils(@Qualifier("origin-datasource")DataSource originDataSource){
+        JobUtils.originDataSource = originDataSource;
+    }
+
+    private static Integer getStepReadCount() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(originDataSource);
         return jdbcTemplate.queryForObject(SQL_STEP_READ_COUNT, Integer.class);
     }
+
+    public static int getBatchSize() {
+        return (int) Math.ceil((double) getStepReadCount() / NUMBER_OF_EXECUTIONS);
+    }
+
 
 
 }
